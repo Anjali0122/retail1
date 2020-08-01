@@ -10,7 +10,7 @@ class Signup extends StatefulWidget {
 
 class _SignupState extends State<Signup> {
    TextEditingController emailController = new TextEditingController();
-  TextEditingController passwordController = new TextEditingController();
+   TextEditingController passwordController = new TextEditingController();
   @override
   Widget build(BuildContext context) {
     final logo = Hero(

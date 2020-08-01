@@ -5,7 +5,10 @@ class UserManagement {
   storeNewUser(user, context) {
     Firestore.instance
         .collection('Users')
-        .add({'email': user.email, 'uid': user.uid}).then((value) {
+        .add({
+          'email': user.email, 
+          'uid': user.uid
+          }).then((value) {
       Navigator.of(context).pop();
       Navigator.of(context).pushReplacementNamed('/homepage');
     }).catchError((e) {
