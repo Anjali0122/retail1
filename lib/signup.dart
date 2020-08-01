@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:retail/home_page.dart';
+import 'package:retail/services/usermanagement.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Signup extends StatefulWidget {
   static String tag = 'signup';
   @override
   _SignupState createState() => _SignupState();
 }
+
+TextEditingController emailController = new TextEditingController();
+TextEditingController passwordController = new TextEditingController();
 
 class _SignupState extends State<Signup> {
   @override
@@ -31,6 +36,7 @@ class _SignupState extends State<Signup> {
     );
     final mail = Text('email');
     final eml = TextFormField(
+      controller: emailController,
       keyboardType: TextInputType.emailAddress,
       autofocus: false,
       initialValue: '',
@@ -42,6 +48,7 @@ class _SignupState extends State<Signup> {
     );
     final Widget label2 = Text('Pass');
     final pass = TextFormField(
+      controller: passwordController,
       autofocus: false,
       initialValue: 'some password',
       obscureText: true,
@@ -69,6 +76,16 @@ class _SignupState extends State<Signup> {
           borderRadius: BorderRadius.circular(24),
         ),
         onPressed: () {
+          FirebaseAuth.instance
+              .createUserWithEmailAndPassword(
+                  email: emailController.text,
+                  password: passwordController.text)
+              .then((signedInUser) {
+            UserManagement().storeNewUser(signedInUser, context);
+          }).catchError((e) {
+            print(e);
+          });
+
           Navigator.of(context).pushNamed(HomePage.tag);
         },
         padding: EdgeInsets.all(12),
