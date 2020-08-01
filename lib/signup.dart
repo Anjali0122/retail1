@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:retail/home_page.dart';
 import 'package:retail/services/usermanagement.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -9,10 +8,9 @@ class Signup extends StatefulWidget {
   _SignupState createState() => _SignupState();
 }
 
-TextEditingController emailController = new TextEditingController();
-TextEditingController passwordController = new TextEditingController();
-
 class _SignupState extends State<Signup> {
+   TextEditingController emailController = new TextEditingController();
+  TextEditingController passwordController = new TextEditingController();
   @override
   Widget build(BuildContext context) {
     final logo = Hero(
@@ -35,11 +33,10 @@ class _SignupState extends State<Signup> {
       ),
     );
     final mail = Text('email');
-    final eml = TextFormField(
-      controller: emailController,
+    final eml = TextField(
+       controller: emailController,
       keyboardType: TextInputType.emailAddress,
       autofocus: false,
-      initialValue: '',
       decoration: InputDecoration(
         hintText: 'Email',
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
@@ -47,10 +44,9 @@ class _SignupState extends State<Signup> {
       ),
     );
     final Widget label2 = Text('Pass');
-    final pass = TextFormField(
+    final pass = TextField(
       controller: passwordController,
       autofocus: false,
-      initialValue: 'some password',
       obscureText: true,
       decoration: InputDecoration(
         hintText: 'Password',
@@ -58,17 +54,7 @@ class _SignupState extends State<Signup> {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
       ),
     );
-    final Widget label3 = Text('confirm pass');
-    final passcn = TextFormField(
-      autofocus: false,
-      initialValue: 'some password',
-      obscureText: true,
-      decoration: InputDecoration(
-        hintText: 'Password',
-        contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
-      ),
-    );
+    
     final loginButton = Padding(
       padding: EdgeInsets.symmetric(vertical: 16.0),
       child: RaisedButton(
@@ -77,20 +63,18 @@ class _SignupState extends State<Signup> {
         ),
         onPressed: () {
           FirebaseAuth.instance
-              .createUserWithEmailAndPassword(
-                  email: emailController.text,
-                  password: passwordController.text)
-              .then((signedInUser) {
-            UserManagement().storeNewUser(signedInUser, context);
-          }).catchError((e) {
-            print(e);
-          });
-
-          Navigator.of(context).pushNamed(HomePage.tag);
+                      .createUserWithEmailAndPassword(
+                          email: emailController.text,
+                          password: passwordController.text)
+                      .then((signedInUser) {
+                    UserManagement().storeNewUser(signedInUser, context);
+                  }).catchError((e) {
+                    print(e);
+                  });
         },
         padding: EdgeInsets.all(12),
         color: Colors.lightBlueAccent,
-        child: Text('Log In', style: TextStyle(color: Colors.white)),
+        child: Text('Sign up', style: TextStyle(color: Colors.white)),
       ),
     );
 
@@ -111,9 +95,6 @@ class _SignupState extends State<Signup> {
               SizedBox(height: 48.0),
               label2,
               pass,
-              SizedBox(height: 48.0),
-              label3,
-              passcn,
               SizedBox(height: 8.0),
               loginButton
             ])));
