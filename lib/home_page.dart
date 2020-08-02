@@ -43,7 +43,7 @@ class HomePage extends StatelessWidget {
           Navigator.of(context).pop();
           FirebaseAuth.instance.signOut().then(
             (value) {
-              Navigator.of(context).pushReplacementNamed('/loginpage');
+              Navigator.of(context).pushNamedAndRemoveUntil('/loginpage', (Route<dynamic> route) => false );
             },
           );
         },
