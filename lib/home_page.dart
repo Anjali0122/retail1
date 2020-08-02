@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePage extends StatelessWidget {
   static String tag = 'home-page';
@@ -32,7 +33,25 @@ class HomePage extends StatelessWidget {
         style: TextStyle(fontSize: 16.0, color: Colors.white),
       ),
     );
-
+    final signoutbutton = Padding(
+      padding: EdgeInsets.symmetric(vertical: 16.0),
+      child: RaisedButton(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        onPressed: () {
+          Navigator.of(context).pop();
+          FirebaseAuth.instance.signOut().then(
+            (value) {
+              Navigator.of(context).pushReplacementNamed('/loginpage');
+            },
+          );
+        },
+        padding: EdgeInsets.all(12),
+        color: Colors.lightBlueAccent,
+        child: Text('Sign Out', style: TextStyle(color: Colors.white)),
+      ),
+    );
     final body = Container(
       width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.all(28.0),
@@ -43,7 +62,7 @@ class HomePage extends StatelessWidget {
         ]),
       ),
       child: Column(
-        children: <Widget>[alucard, welcome, lorem],
+        children: <Widget>[alucard, welcome, lorem, signoutbutton],
       ),
     );
 

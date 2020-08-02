@@ -55,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
                       .signInWithEmailAndPassword(
                           email: emailController.text,
                           password: passwordController.text)
-                      .then((FirebaseUser) {
+                      .then((FirebaseUser ) {
                     Navigator.of(context).pushReplacementNamed('/homepage');
                   }).catchError((e) {
                     print(e);
