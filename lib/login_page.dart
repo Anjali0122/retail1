@@ -27,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
           padding: EdgeInsets.only(left: 24.0, right: 24.0),
           child: Column(
             children: <Widget>[
-              SizedBox(height: 200),
+              SizedBox(height: 160),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: CircleAvatar(
@@ -219,7 +219,135 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(color: Colors.black54),
                   textAlign: TextAlign.left,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Dialog(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  20.0)), //this right here
+                          child: Container(
+                            height: 160,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  TextFormField(
+                                    controller: emailController,
+                                    keyboardType: TextInputType.emailAddress,
+                                    decoration: InputDecoration(
+                                      prefixIcon: Icon(
+                                        Icons.email,
+                                        color: Color(0xFF8F38AA),
+                                      ),
+                                      labelText: "Email",
+                                      labelStyle: TextStyle(
+                                        color: Colors.black,
+                                      ),
+                                      errorStyle:
+                                          TextStyle(color: Colors.purple),
+                                      filled: true,
+                                      fillColor: Colors.white,
+                                      hintText: "Email",
+                                      contentPadding: EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 20.0),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(32.0)),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Color(0xFF8F38AA),
+                                            width: 1.0),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(32.0)),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Color(0xFF8F38AA),
+                                            width: 2.0),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(32.0)),
+                                      ),
+                                    ),
+                                    validator: (value) {
+                                      if (value.isNotEmpty &&
+                                          value.contains("@")) {
+                                        var splitEmail = value.split("@");
+                                        print(
+                                            "split length is ${splitEmail.length}");
+                                        if (splitEmail.length == 2) {
+                                          var firstHalf = splitEmail[0];
+                                          var secondHalf = splitEmail[1];
+
+                                          print(
+                                              "first half is $firstHalf with length of ${firstHalf.length}");
+                                          print(
+                                              "second half is $secondHalf with length of ${secondHalf.length}");
+
+                                          var secondHalfSplit =
+                                              secondHalf.split(".");
+                                          print(
+                                              "second half split lenght is ${secondHalfSplit.length}");
+                                          print(
+                                              "second half 1 is [${secondHalfSplit[0]}] ");
+
+                                          if (!secondHalf.contains(".") ||
+                                              secondHalf.length < 3 ||
+                                              secondHalfSplit.length != 2 ||
+                                              secondHalfSplit[0].isEmpty ||
+                                              secondHalfSplit[1].isEmpty) {
+                                            return "Please enter a valid email";
+                                          }
+
+                                          if (firstHalf.length < 3) {
+                                            return "Please enter a valid email";
+                                          }
+                                        } else {
+                                          return "Please enter a valid email";
+                                        }
+                                      }
+
+                                      if (value.isEmpty ||
+                                          !value.contains("@") ||
+                                          !value.contains(".") ||
+                                          value.length < 6) {
+                                        return 'Please enter a valid email';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  SizedBox(
+                                    width: 320.0,
+                                    child: RaisedButton(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              new BorderRadius.circular(30.0)),
+                                      onPressed: () {
+                                         if (_formKey.currentState.validate()){
+                                          
+                                         }
+                                      },
+                                      child: Text(
+                                        "Send",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      color: Colors.lightBlueAccent,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      });
+                },
               ),
               FlatButton(
                 child: Text(
@@ -228,7 +356,6 @@ class _LoginPageState extends State<LoginPage> {
                   textAlign: TextAlign.right,
                 ),
                 onPressed: () {
-                  
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => Signup()));
                 },

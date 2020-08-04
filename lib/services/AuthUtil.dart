@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
 class AuthUtil {
   static Future<AuthResult> signInUser(
     username,
@@ -53,5 +52,8 @@ class AuthUtil {
       print(e);
       return null;
     }
+  }
+  Future<void> resetPassword(String email) async {
+    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
   }
 }

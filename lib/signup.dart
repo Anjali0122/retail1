@@ -34,7 +34,7 @@ class _SignupState extends State<Signup> {
           child: Column(
 //            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              SizedBox(height: 40),
+              SizedBox(height: 75),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: CircleAvatar(
