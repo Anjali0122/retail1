@@ -18,6 +18,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     TextEditingController emailController = new TextEditingController();
     TextEditingController passwordController = new TextEditingController();
+    String _warning;
 
     final _formKey = GlobalKey<FormState>();
     return Scaffold(
@@ -273,52 +274,6 @@ class _LoginPageState extends State<LoginPage> {
                                             Radius.circular(32.0)),
                                       ),
                                     ),
-                                    validator: (value) {
-                                      if (value.isNotEmpty &&
-                                          value.contains("@")) {
-                                        var splitEmail = value.split("@");
-                                        print(
-                                            "split length is ${splitEmail.length}");
-                                        if (splitEmail.length == 2) {
-                                          var firstHalf = splitEmail[0];
-                                          var secondHalf = splitEmail[1];
-
-                                          print(
-                                              "first half is $firstHalf with length of ${firstHalf.length}");
-                                          print(
-                                              "second half is $secondHalf with length of ${secondHalf.length}");
-
-                                          var secondHalfSplit =
-                                              secondHalf.split(".");
-                                          print(
-                                              "second half split lenght is ${secondHalfSplit.length}");
-                                          print(
-                                              "second half 1 is [${secondHalfSplit[0]}] ");
-
-                                          if (!secondHalf.contains(".") ||
-                                              secondHalf.length < 3 ||
-                                              secondHalfSplit.length != 2 ||
-                                              secondHalfSplit[0].isEmpty ||
-                                              secondHalfSplit[1].isEmpty) {
-                                            return "Please enter a valid email";
-                                          }
-
-                                          if (firstHalf.length < 3) {
-                                            return "Please enter a valid email";
-                                          }
-                                        } else {
-                                          return "Please enter a valid email";
-                                        }
-                                      }
-
-                                      if (value.isEmpty ||
-                                          !value.contains("@") ||
-                                          !value.contains(".") ||
-                                          value.length < 6) {
-                                        return 'Please enter a valid email';
-                                      }
-                                      return null;
-                                    },
                                   ),
                                   SizedBox(
                                     height: 20,
@@ -330,9 +285,22 @@ class _LoginPageState extends State<LoginPage> {
                                           borderRadius:
                                               new BorderRadius.circular(30.0)),
                                       onPressed: () {
-                                         if (_formKey.currentState.validate()){
-                                          
-                                         }
+                                        try {
+                                          AuthUtil.resetpassword(
+                                              emailController.text);
+                                          print("Password reset email sent");
+                                          _warning =
+                                              "A password reset link has been sent! Check Your Email";
+                                          _showforgotpass(
+                                              context, _warning);
+                                        } catch (e) {
+                                          print(e);
+                                          setState(() {
+                                            _warning = e.message;
+                                            _showforgotpass(
+                                                context, _warning);
+                                          });
+                                        }
                                       },
                                       child: Text(
                                         "Send",
@@ -408,3 +376,44 @@ Future _showErrorDataDialog(context, String error) async {
     },
   );
 }
+
+Future _showforgotpass(context, String error) async {
+  var matreset = AlertDialog(
+    content: new Text(error),
+    actions: <Widget>[
+      new FlatButton(
+        child: new Text("Ok"),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+      ),
+    ],
+  );
+
+  var cupreset = CupertinoAlertDialog(
+    title: new Text("Error"),
+    content: new Text(error),
+    actions: <Widget>[
+      new FlatButton(
+        child: new Text("Ok"),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+      ),
+    ],
+  );
+
+  Widget dialog = matreset;
+
+  if (Platform.isIOS) {
+    dialog = cupreset;
+  }
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return dialog;
+    },
+  );
+}
+
