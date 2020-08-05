@@ -68,6 +68,69 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          elevation: 0,
+          backgroundColor: Colors.blue[400],
+          iconTheme: IconThemeData(color: Colors.black),
+          title: Text(
+            "Retail",
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
+        drawer: Drawer(
+          child: ListView(
+            children: <Widget>[
+              FutureBuilder(
+                  future: FirebaseAuth.instance.currentUser(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      return UserAccountsDrawerHeader(
+                          accountName: Text(
+                            "Name: ${snapshot.data.displayName}",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          accountEmail: Text(
+                            "Email: ${snapshot.data.email}",
+                            style: TextStyle(fontSize: 17),
+                          ));
+                    } else {
+                      return CircularProgressIndicator();
+                    }
+                  }),
+              ListTile(
+                leading: Icon(Icons.shopping_cart),
+                title: Text(
+                  "Purchase History",
+                  style: TextStyle(
+                      fontStyle: FontStyle.normal,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 20),
+                ),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: Icon(Icons.exit_to_app),
+                title: Text(
+                  "Log out",
+                  style: TextStyle(
+                      fontStyle: FontStyle.normal,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 20),
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  FirebaseAuth.instance.signOut().then(
+                    (value) {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/loginpage', (Route<dynamic> route) => false);
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
         body: Container(
             alignment: Alignment.center,
             width: MediaQuery.of(context).size.width,
@@ -87,40 +150,36 @@ class _HomePageState extends State<HomePage> {
                   child: Image.asset('assets/logo.png'),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 16.0),
-                child: RaisedButton(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    FirebaseAuth.instance.signOut().then(
-                      (value) {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                            '/loginpage', (Route<dynamic> route) => false);
-                      },
-                    );
-                  },
-                  padding: EdgeInsets.all(12),
-                  color: Colors.black38,
-                  child:
-                      Text('Sign Out', style: TextStyle(color: Colors.white)),
-                ),
-              ),
               Flex(
                   direction: Axis.vertical,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     RaisedButton(
-                        onPressed: () => scanBarcodeNormal(),
-                        child: Text("Start barcode scan")),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      onPressed: () => scanBarcodeNormal(),
+                      padding: EdgeInsets.all(12),
+                      color: Colors.black38,
+                      child: Text("Start barcode scan",
+                          style: TextStyle(color: Colors.white)),
+                    ),
+                    SizedBox(
+                      height: 25,
+                    ),
                     RaisedButton(
-                        onPressed: () => scanQR(),
-                        child: Text("Start QR scan")),
-                    RaisedButton(
-                        onPressed: () => startBarcodeScanStream(),
-                        child: Text("Start barcode scan stream")),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      onPressed: () => startBarcodeScanStream(),
+                      padding: EdgeInsets.all(12),
+                      color: Colors.black38,
+                      child: Text("Start barcode scan stream",
+                          style: TextStyle(color: Colors.white)),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
                     Text('Scan result : $_scanBarcode\n',
                         style: TextStyle(fontSize: 20))
                   ])
