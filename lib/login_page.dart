@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:retail/home_page.dart';
 import 'package:retail/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:retail/services/AuthUtil.dart';
@@ -22,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
 
     final _formKey = GlobalKey<FormState>();
     return Scaffold(
+      backgroundColor: Colors.blue[100],
       body: Form(
         key: _formKey,
         child: Padding(
@@ -177,10 +177,8 @@ class _LoginPageState extends State<LoginPage> {
                             .then((AuthResult authResult) {
                           print("authResult is ${authResult.user.email}");
                           Navigator.pop(context);
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => HomePage()),
-                          );
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              '/homepage', (Route<dynamic> route) => false);
                         }).catchError((error) {
                           var e = error;
                           var authError = "";
@@ -291,14 +289,12 @@ class _LoginPageState extends State<LoginPage> {
                                           print("Password reset email sent");
                                           _warning =
                                               "A password reset link has been sent! Check Your Email";
-                                          _showforgotpass(
-                                              context, _warning);
+                                          _showforgotpass(context, _warning);
                                         } catch (e) {
                                           print(e);
                                           setState(() {
                                             _warning = e.message;
-                                            _showforgotpass(
-                                                context, _warning);
+                                            _showforgotpass(context, _warning);
                                           });
                                         }
                                       },
@@ -416,4 +412,3 @@ Future _showforgotpass(context, String error) async {
     },
   );
 }
-

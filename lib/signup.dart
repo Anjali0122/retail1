@@ -27,6 +27,7 @@ class _SignupState extends State<Signup> {
     final _formKey = GlobalKey<FormState>();
 
     return Scaffold(
+      backgroundColor: Colors.blue[100],
       body: Form(
         key: _formKey,
         child: Padding(
