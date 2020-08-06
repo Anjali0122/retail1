@@ -94,6 +94,12 @@ class _HomePageState extends State<HomePage> {
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       return UserAccountsDrawerHeader(
+                          currentAccountPicture: new CircleAvatar(
+                            radius: 60.0,
+                             backgroundColor: Colors.transparent,
+                            backgroundImage: NetworkImage(
+                                "https://cdn2.iconfinder.com/data/icons/website-icons/512/User_Avatar-512.png"),
+                          ),
                           accountName: Text(
                             "Name: ${snapshot.data.displayName}",
                             style: TextStyle(fontSize: 20),
@@ -151,41 +157,10 @@ class _HomePageState extends State<HomePage> {
             ),
             child: Column(
               children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: CircleAvatar(
-                    radius: 72.0,
-                    backgroundColor: Colors.transparent,
-                    child: Image.asset('assets/logo.png'),
-                  ),
-                ),
                 Flex(
                   direction: Axis.vertical,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    RaisedButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      onPressed: () => scanBarcodeNormal(),
-                      padding: EdgeInsets.all(12),
-                      color: Colors.black38,
-                      child: Text("Start barcode scan",
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    RaisedButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      onPressed: () => startBarcodeScanStream(),
-                      padding: EdgeInsets.all(12),
-                      color: Colors.black38,
-                      child: Text("Start barcode scan stream",
-                          style: TextStyle(color: Colors.white)),
-                    ),
                     SizedBox(
                       height: 30,
                     ),
@@ -202,14 +177,14 @@ class _HomePageState extends State<HomePage> {
           shape: StadiumBorder(),
         ),
         child: FloatingActionButton.extended(
-          onPressed: () {},
-           backgroundColor: Colors.black,
+          onPressed: () => scanBarcodeNormal(),
+          backgroundColor: Colors.black,
           icon: Icon(
             FontAwesomeIcons.barcode,
             color: Colors.white,
           ),
           label: Text(
-            "SCAN" ,
+            "SCAN",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
