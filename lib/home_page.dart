@@ -1,16 +1,22 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomePage extends StatefulWidget {
+  HomePage({Key key, this.title}) : super(key: key);
+  final String title;
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  String _scanBarcode = 'Unknown';
+  final dbRef = FirebaseDatabase.instance.reference().child("products");
+  String _scanBarcode;
   @override
   void initState() {
     super.initState();
@@ -68,6 +74,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        floatingActionButton: floatingBar(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         appBar: AppBar(
           centerTitle: true,
           elevation: 0,
@@ -141,16 +149,17 @@ class _HomePageState extends State<HomePage> {
                 Colors.lightBlueAccent,
               ]),
             ),
-            child: Column(children: <Widget>[
-              Padding(
-                padding: EdgeInsets.all(16.0),
-                child: CircleAvatar(
-                  radius: 72.0,
-                  backgroundColor: Colors.transparent,
-                  child: Image.asset('assets/logo.png'),
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: CircleAvatar(
+                    radius: 72.0,
+                    backgroundColor: Colors.transparent,
+                    child: Image.asset('assets/logo.png'),
+                  ),
                 ),
-              ),
-              Flex(
+                Flex(
                   direction: Axis.vertical,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -181,8 +190,28 @@ class _HomePageState extends State<HomePage> {
                       height: 30,
                     ),
                     Text('Scan result : $_scanBarcode\n',
-                        style: TextStyle(fontSize: 20))
-                  ])
-            ])));
+                        style: TextStyle(fontSize: 20)),
+                  ],
+                ),
+              ],
+            )));
   }
+
+  Widget floatingBar() => Ink(
+        decoration: ShapeDecoration(
+          shape: StadiumBorder(),
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: () {},
+           backgroundColor: Colors.black,
+          icon: Icon(
+            FontAwesomeIcons.barcode,
+            color: Colors.white,
+          ),
+          label: Text(
+            "SCAN" ,
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+        ),
+      );
 }
