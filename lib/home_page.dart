@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -73,6 +74,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        floatingActionButton: floatingBar(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         appBar: AppBar(
           centerTitle: true,
           elevation: 0,
@@ -157,39 +160,58 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 Flex(
-                    direction: Axis.vertical,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      RaisedButton(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        onPressed: () => scanBarcodeNormal(),
-                        padding: EdgeInsets.all(12),
-                        color: Colors.black38,
-                        child: Text("Start barcode scan",
-                            style: TextStyle(color: Colors.white)),
+                  direction: Axis.vertical,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    RaisedButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
                       ),
-                      SizedBox(
-                        height: 25,
+                      onPressed: () => scanBarcodeNormal(),
+                      padding: EdgeInsets.all(12),
+                      color: Colors.black38,
+                      child: Text("Start barcode scan",
+                          style: TextStyle(color: Colors.white)),
+                    ),
+                    SizedBox(
+                      height: 25,
+                    ),
+                    RaisedButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
                       ),
-                      RaisedButton(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        onPressed: () => startBarcodeScanStream(),
-                        padding: EdgeInsets.all(12),
-                        color: Colors.black38,
-                        child: Text("Start barcode scan stream",
-                            style: TextStyle(color: Colors.white)),
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Text('Scan result : $_scanBarcode\n',
-                          style: TextStyle(fontSize: 20)),
-                    ]),
+                      onPressed: () => startBarcodeScanStream(),
+                      padding: EdgeInsets.all(12),
+                      color: Colors.black38,
+                      child: Text("Start barcode scan stream",
+                          style: TextStyle(color: Colors.white)),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Text('Scan result : $_scanBarcode\n',
+                        style: TextStyle(fontSize: 20)),
+                  ],
+                ),
               ],
             )));
   }
+
+  Widget floatingBar() => Ink(
+        decoration: ShapeDecoration(
+          shape: StadiumBorder(),
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: () {},
+           backgroundColor: Colors.black,
+          icon: Icon(
+            FontAwesomeIcons.barcode,
+            color: Colors.white,
+          ),
+          label: Text(
+            "SCAN" ,
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+        ),
+      );
 }
