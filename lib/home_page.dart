@@ -1,16 +1,21 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class HomePage extends StatefulWidget {
+  HomePage({Key key, this.title}) : super(key: key);
+  final String title;
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  String _scanBarcode = 'Unknown';
+  final dbRef = FirebaseDatabase.instance.reference().child("products");
+  String _scanBarcode;
   @override
   void initState() {
     super.initState();
@@ -141,48 +146,50 @@ class _HomePageState extends State<HomePage> {
                 Colors.lightBlueAccent,
               ]),
             ),
-            child: Column(children: <Widget>[
-              Padding(
-                padding: EdgeInsets.all(16.0),
-                child: CircleAvatar(
-                  radius: 72.0,
-                  backgroundColor: Colors.transparent,
-                  child: Image.asset('assets/logo.png'),
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: CircleAvatar(
+                    radius: 72.0,
+                    backgroundColor: Colors.transparent,
+                    child: Image.asset('assets/logo.png'),
+                  ),
                 ),
-              ),
-              Flex(
-                  direction: Axis.vertical,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    RaisedButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
+                Flex(
+                    direction: Axis.vertical,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      RaisedButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        onPressed: () => scanBarcodeNormal(),
+                        padding: EdgeInsets.all(12),
+                        color: Colors.black38,
+                        child: Text("Start barcode scan",
+                            style: TextStyle(color: Colors.white)),
                       ),
-                      onPressed: () => scanBarcodeNormal(),
-                      padding: EdgeInsets.all(12),
-                      color: Colors.black38,
-                      child: Text("Start barcode scan",
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    RaisedButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
+                      SizedBox(
+                        height: 25,
                       ),
-                      onPressed: () => startBarcodeScanStream(),
-                      padding: EdgeInsets.all(12),
-                      color: Colors.black38,
-                      child: Text("Start barcode scan stream",
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Text('Scan result : $_scanBarcode\n',
-                        style: TextStyle(fontSize: 20))
-                  ])
-            ])));
+                      RaisedButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        onPressed: () => startBarcodeScanStream(),
+                        padding: EdgeInsets.all(12),
+                        color: Colors.black38,
+                        child: Text("Start barcode scan stream",
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Text('Scan result : $_scanBarcode\n',
+                          style: TextStyle(fontSize: 20)),
+                    ]),
+              ],
+            )));
   }
 }
