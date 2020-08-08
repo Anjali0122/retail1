@@ -1,22 +1,23 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
   final String title;
+
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final dbRef = FirebaseDatabase.instance.reference().child("products");
   String _scanBarcode;
+
   @override
   void initState() {
     super.initState();
@@ -96,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                       return UserAccountsDrawerHeader(
                           currentAccountPicture: new CircleAvatar(
                             radius: 60.0,
-                             backgroundColor: Colors.transparent,
+                            backgroundColor: Colors.transparent,
                             backgroundImage: NetworkImage(
                                 "https://cdn2.iconfinder.com/data/icons/website-icons/512/User_Avatar-512.png"),
                           ),
@@ -146,30 +147,35 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         body: Container(
-            alignment: Alignment.center,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.all(28.0),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [
-                Colors.blue,
-                Colors.lightBlueAccent,
-              ]),
-            ),
-            child: Column(
-              children: <Widget>[
-                Flex(
-                  direction: Axis.vertical,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Text('Scan result : $_scanBarcode\n',
-                        style: TextStyle(fontSize: 20)),
-                  ],
-                ),
-              ],
-            )));
+          alignment: Alignment.center,
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.all(28.0),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [
+              Colors.blue,
+              Colors.lightBlueAccent,
+            ]),
+          ),
+          child: StreamBuilder(
+            stream: Firestore.instance
+                .collection("products")
+                .where("barcode", isEqualTo: "$_scanBarcode")
+                .snapshots(),
+            builder: (context, snapshot) {
+              return ListView.builder(
+                itemCount: snapshot.data.documents.length,
+                itemBuilder: (context, index) {
+                  DocumentSnapshot products = snapshot.data.documents[index];
+                  return ListTile(
+                    leading: Image.network(products['img']),
+                    title: Text("Name : "+products['name'],style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                    subtitle: Text("Price : " +products['price']+" Rs",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                  );
+                },
+              );
+            },
+          ),
+        ));
   }
 
   Widget floatingBar() => Ink(
