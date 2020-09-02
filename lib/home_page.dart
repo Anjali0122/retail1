@@ -1,22 +1,23 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
   final String title;
+
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final dbRef = FirebaseDatabase.instance.reference().child("products");
   String _scanBarcode;
+
   @override
   void initState() {
     super.initState();
@@ -94,6 +95,12 @@ class _HomePageState extends State<HomePage> {
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       return UserAccountsDrawerHeader(
+                          currentAccountPicture: new CircleAvatar(
+                            radius: 60.0,
+                            backgroundColor: Colors.transparent,
+                            backgroundImage: NetworkImage(
+                                "https://cdn2.iconfinder.com/data/icons/website-icons/512/User_Avatar-512.png"),
+                          ),
                           accountName: Text(
                             "Name: ${snapshot.data.displayName}",
                             style: TextStyle(fontSize: 20),
@@ -140,61 +147,35 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         body: Container(
-            alignment: Alignment.center,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.all(28.0),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [
-                Colors.blue,
-                Colors.lightBlueAccent,
-              ]),
-            ),
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: CircleAvatar(
-                    radius: 72.0,
-                    backgroundColor: Colors.transparent,
-                    child: Image.asset('assets/logo.png'),
-                  ),
-                ),
-                Flex(
-                  direction: Axis.vertical,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    RaisedButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      onPressed: () => scanBarcodeNormal(),
-                      padding: EdgeInsets.all(12),
-                      color: Colors.black38,
-                      child: Text("Start barcode scan",
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    RaisedButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      onPressed: () => startBarcodeScanStream(),
-                      padding: EdgeInsets.all(12),
-                      color: Colors.black38,
-                      child: Text("Start barcode scan stream",
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Text('Scan result : $_scanBarcode\n',
-                        style: TextStyle(fontSize: 20)),
-                  ],
-                ),
-              ],
-            )));
+          alignment: Alignment.center,
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.all(28.0),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [
+              Colors.blue,
+              Colors.lightBlueAccent,
+            ]),
+          ),
+          child: StreamBuilder(
+            stream: Firestore.instance
+                .collection("products")
+                .where("barcode", isEqualTo: "$_scanBarcode")
+                .snapshots(),
+            builder: (context, snapshot) {
+              return ListView.builder(
+                itemCount: snapshot.data.documents.length,
+                itemBuilder: (context, index) {
+                  DocumentSnapshot products = snapshot.data.documents[index];
+                  return ListTile(
+                    leading: Image.network(products['img']),
+                    title: Text("Name : "+products['name'],style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                    subtitle: Text("Price : " +products['price']+" Rs",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                  );
+                },
+              );
+            },
+          ),
+        ));
   }
 
   Widget floatingBar() => Ink(
@@ -202,14 +183,14 @@ class _HomePageState extends State<HomePage> {
           shape: StadiumBorder(),
         ),
         child: FloatingActionButton.extended(
-          onPressed: () {},
-           backgroundColor: Colors.black,
+          onPressed: () => scanBarcodeNormal(),
+          backgroundColor: Colors.black,
           icon: Icon(
             FontAwesomeIcons.barcode,
             color: Colors.white,
           ),
           label: Text(
-            "SCAN" ,
+            "SCAN",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),
