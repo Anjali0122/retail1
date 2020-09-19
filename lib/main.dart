@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:retail/Cart.dart';
+import 'package:retail/check.dart';
 import 'package:retail/signup.dart';
 import 'package:retail/splashscreen.dart';
 import 'login_page.dart';
@@ -13,9 +15,11 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final routes = <String, WidgetBuilder>{
+    '/check': (BuildContext context) => new Check(),
     '/homepage': (BuildContext context) => new HomePage(),
     '/loginpage': (BuildContext context) => new LoginPage(),
     '/signup': (BuildContext context) => new Signup(),
+    '/cartpage':(BuildContext context) => new Cart(),
   };
 
   @override

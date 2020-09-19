@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:retail/services/crud.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -18,6 +19,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String _scanBarcode;
+  String _userId;
 
   @override
   void initState() {
@@ -185,6 +187,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   StreamBuilder<QuerySnapshot> buildStreamBuilder() {
+    crudMethods crudObj = new crudMethods();
+    FirebaseAuth.instance.currentUser().then((user) {
+      _userId = user.uid;
+    });
     return StreamBuilder(
       stream: Firestore.instance
           .collection("products")
@@ -377,7 +383,22 @@ class _HomePageState extends State<HomePage> {
                     child: RaisedButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: new BorderRadius.circular(30.0)),
-                        onPressed: () {},
+                        onPressed: () {
+                          Map<String, dynamic> cartData = {
+                            'barcode': products['barcode'],
+                            'img': products['img'],
+                            'name': products['name'],
+                            'netweight': products['netweight'],
+                            'price': products['price'],
+                            'uid': _userId
+                          };
+
+                          crudObj.addData(cartData).then((result) {
+                            dialogTrigger(context);
+                          }).catchError((e) {
+                            print(e);
+                          });
+                        },
                         child: Row(
                           children: [
                             Icon(
@@ -396,6 +417,24 @@ class _HomePageState extends State<HomePage> {
                         ),
                         color: Colors.blue),
                   ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Map<String, dynamic> cartData = {
+                      'barcode': products['barcode'],
+                      'img': products['img'],
+                      'name': products['name'],
+                      'netweight': products['netweight'],
+                      'price': products['price'],
+                      'uid': _userId
+                    };
+
+                    crudObj.addData(cartData).then((result) {
+                      dialogTrigger(context);
+                    }).catchError((e) {
+                      print(e);
+                    });
+                  },
                 )
               ],
             );
@@ -415,6 +454,17 @@ class _HomePageState extends State<HomePage> {
         "Scan&Pay",
         style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
       ),
+      actions: [
+        IconButton(
+          icon: Icon(
+            Icons.shopping_cart,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.of(context).pushNamed('/cartpage');
+          },
+        )
+      ],
     );
   }
 
@@ -435,6 +485,32 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       );
+}
+
+Future<bool> dialogTrigger(BuildContext context) async {
+  return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Job done', style: TextStyle(fontSize: 22.0)),
+          content: Text(
+            'Added Successfully',
+            style: TextStyle(fontSize: 20.0),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                'Alright',
+                style: TextStyle(fontSize: 18),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      });
 }
 
 const String _svg_sd12o8 =

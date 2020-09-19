@@ -272,7 +272,6 @@ class _SignupState extends State<Signup> {
                           // If the form is valid, display a Snackbar.
 //                      Scaffold.of(context)
 //                          .showSnackBar(SnackBar(content: Text('Processing Data')));
-
                           AuthUtil.registerUser(
                                   emailController.text, passwordController.text)
                               .then((result) {
