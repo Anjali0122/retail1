@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:retail/check.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -20,7 +19,7 @@ class SplashScreenState extends State<SplashScreen> {
     return new Timer(Duration(seconds: 2), onDoneLoading);
   }
   onDoneLoading() async {
-  Navigator.of(context).push(MaterialPageRoute(builder: (context) => Check()));
+  Navigator.of(context).pushReplacementNamed('/check');
 }
 @override
   Widget build(BuildContext context) {
