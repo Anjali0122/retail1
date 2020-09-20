@@ -5,8 +5,9 @@ import 'package:retail/signup.dart';
 import 'package:retail/splashscreen.dart';
 import 'login_page.dart';
 import 'home_page.dart';
-
-void main() => runApp(MyApp());
+void main() => runApp(
+      MyApp(),
+    );
 
 class MyApp extends StatefulWidget {
   @override
@@ -19,7 +20,7 @@ class _MyAppState extends State<MyApp> {
     '/homepage': (BuildContext context) => new HomePage(),
     '/loginpage': (BuildContext context) => new LoginPage(),
     '/signup': (BuildContext context) => new Signup(),
-    '/cartpage':(BuildContext context) => new Cart(),
+    '/cartpage': (BuildContext context) => new Cart(),
   };
 
   @override
