@@ -149,13 +149,16 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           buildStreamBuilder(),
-           Padding(
-             padding: const EdgeInsets.all(8.0),
-             child: Text(
+          SizedBox(
+            height: 30,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
               ' Clothes',
               style: TextStyle(fontWeight: FontWeight.w300, fontSize: 20),
+            ),
           ),
-           ),
           buildStreamClothes()
         ],
       ),
@@ -163,10 +166,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   StreamBuilder<QuerySnapshot> buildStreamBuilder() {
-    crudMethods crudObj = new crudMethods();
-    FirebaseAuth.instance.currentUser().then((user) {
-      _userId = user.uid;
-    });
     return StreamBuilder(
         stream: Firestore.instance
             .collection("products")
@@ -192,6 +191,7 @@ class _HomePageState extends State<HomePage> {
                   }));
         });
   }
+
   StreamBuilder<QuerySnapshot> buildStreamClothes() {
     crudMethods crudObj = new crudMethods();
     FirebaseAuth.instance.currentUser().then((user) {
@@ -252,7 +252,52 @@ class _HomePageState extends State<HomePage> {
           shape: StadiumBorder(),
         ),
         child: FloatingActionButton.extended(
-          onPressed: () => scanBarcodeNormal(),
+          onPressed: () {
+            scanBarcodeNormal();
+            if (_scanBarcode != '-1' || null) {
+              return showDialog(
+                  context: context,
+                  builder: (context) {
+                    return Dialog(
+                      child: Container(
+                        height: 350,
+                        child: Column(
+                          children: [
+                            StreamBuilder(
+                                stream: Firestore.instance
+                                    .collection("products")
+                                    .where("barcode",
+                                        isEqualTo: '$_scanBarcode')
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.data == null)
+                                    return Text(
+                                      'Scan Barcode',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    );
+                                  return Container(
+                                      height: 350,
+                                      width: 165,
+                                      child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount:
+                                            snapshot.data.documents.length,
+                                        itemBuilder: (context, index) {
+                                          DocumentSnapshot products =
+                                              snapshot.data.documents[index];
+                                          return ScanCard(products: products);
+                                        },
+                                      ));
+                                }),
+                          ],
+                        ),
+                      ),
+                    );
+                  });
+            }
+          },
           backgroundColor: Colors.black,
           icon: Icon(
             FontAwesomeIcons.barcode,
@@ -276,8 +321,13 @@ class ItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String _userId;
+    crudMethods crudObj = new crudMethods();
+    FirebaseAuth.instance.currentUser().then((user) {
+      _userId = user.uid;
+    });
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
           padding: EdgeInsets.all(20.0),
@@ -311,9 +361,123 @@ class ItemCard extends StatelessWidget {
                 Icons.add_shopping_cart,
                 color: Colors.black,
               ),
-              onTap: () {},
+              onTap: () {
+                Map<String, dynamic> cartData = {
+                  'barcode': products['barcode'],
+                  'img': products['img'],
+                  'name': products['name'],
+                  'netweight': products['netweight'],
+                  'price': products['price'],
+                  'uid': _userId
+                };
+                crudObj.addData(cartData).then((result) {
+                  dialogTrigger(context);
+                }).catchError((e) {
+                  print(e);
+                });
+              },
             ),
           ],
+        )
+      ],
+    );
+  }
+}
+
+class ScanCard extends StatelessWidget {
+  const ScanCard({
+    Key key,
+    @required this.products,
+  }) : super(key: key);
+  final DocumentSnapshot products;
+
+  @override
+  Widget build(BuildContext context) {
+    String _userId;
+    crudMethods crudObj = new crudMethods();
+    FirebaseAuth.instance.currentUser().then((user) {
+      _userId = user.uid;
+    });
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: EdgeInsets.all(10.0),
+          height: 180,
+          width: 160,
+          decoration: BoxDecoration(
+              color: Color(0xFF3D82AE),
+              borderRadius: BorderRadius.circular(16)),
+          child: Image.network(products['img']),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20.0 / 4),
+          child: Text(
+            products['name'],
+            style: TextStyle(
+              color: Color(0xFF535353),
+              fontSize: 18,
+            ),
+          ),
+        ),
+        Column(
+          children: [
+            Text(
+              "netweight- " + products['netweight'],
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+            SizedBox(
+              width: 30,
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Text(
+              "\₹ " + products['price'],
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+            SizedBox(
+              width: 60,
+            ),
+            Icon(
+              Icons.add_shopping_cart,
+              color: Colors.black,
+              size: 27,
+            ),
+          ],
+        ),
+        SizedBox(
+          width: 10,
+        ),
+        SizedBox(
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: RaisedButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(30.0)),
+              color: Color(0xFF3D82AE),
+              child: Text(
+                "Add to cart",
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () {
+                Map<String, dynamic> cartData = {
+                  'barcode': products['barcode'],
+                  'img': products['img'],
+                  'name': products['name'],
+                  'netweight': products['netweight'],
+                  'price': products['price'],
+                  'uid': _userId
+                };
+                crudObj.addData(cartData).then((result) {
+                  dialogTrigger(context);
+                }).catchError((e) {
+                  print(e);
+                });
+              },
+            ),
+          ),
         )
       ],
     );
