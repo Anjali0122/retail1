@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:retail/services/crud.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -317,7 +316,7 @@ class ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String _userId;
-    crudMethods crudObj = new crudMethods();
+
     FirebaseAuth.instance.currentUser().then((user) {
       _userId = user.uid;
     });
@@ -357,15 +356,17 @@ class ItemCard extends StatelessWidget {
                 color: Colors.black,
               ),
               onTap: () {
-                Map<String, dynamic> cartData = {
+                DocumentReference documentReference =
+                    Firestore.instance.collection('CartData').document();
+                documentReference.setData({
+                  'uid': _userId,
                   'barcode': products['barcode'],
                   'img': products['img'],
                   'name': products['name'],
                   'netweight': products['netweight'],
                   'price': products['price'],
-                  'uid': _userId
-                };
-                crudObj.addData(cartData).then((result) {
+                  'id': documentReference.documentID
+                }).then((result) {
                   dialogTrigger(context);
                 }).catchError((e) {
                   print(e);
@@ -389,7 +390,7 @@ class ScanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String _userId;
-    crudMethods crudObj = new crudMethods();
+
     FirebaseAuth.instance.currentUser().then((user) {
       _userId = user.uid;
     });
@@ -457,15 +458,17 @@ class ScanCard extends StatelessWidget {
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
-                Map<String, dynamic> cartData = {
+                DocumentReference documentReference =
+                    Firestore.instance.collection('CartData').document();
+                documentReference.setData({
+                  'uid': _userId,
                   'barcode': products['barcode'],
                   'img': products['img'],
                   'name': products['name'],
                   'netweight': products['netweight'],
                   'price': products['price'],
-                  'uid': _userId
-                };
-                crudObj.addData(cartData).then((result) {
+                  'id': documentReference.documentID
+                }).then((result) {
                   dialogTrigger(context);
                 }).catchError((e) {
                   print(e);

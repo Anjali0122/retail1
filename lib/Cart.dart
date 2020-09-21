@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:retail/services/crud.dart';
 
 class Cart extends StatefulWidget {
   Cart({Key key, this.title}) : super(key: key);
@@ -31,19 +30,19 @@ class _Cart extends State<Cart> {
 
 StreamBuilder<QuerySnapshot> buildStreamBuilder() {
   String _userId;
-  crudMethods crudObj = new crudMethods();
   FirebaseAuth.instance.currentUser().then((user) {
     _userId = user.uid;
+    print(_userId);
   });
   return StreamBuilder(
       stream: Firestore.instance
           .collection("CartData")
-          .where("uid", isEqualTo: _userId)
+          .where('uid', isEqualTo: _userId)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.data == null)
           return Text(
-            'Scan Barcode',
+            '              No Items In The Cart',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           );
         return Container(
@@ -121,13 +120,22 @@ class BottomBar extends StatelessWidget {
 }
 
 Container quantity() {
+ String _userId;
+  FirebaseAuth.instance.currentUser().then((user) {
+    _userId = user.uid;
+  });
+  void countDocuments() async {
+    QuerySnapshot _myDoc = await Firestore.instance.collection('CartData').where("uid", isEqualTo: _userId).getDocuments();
+    List<DocumentSnapshot> _myDocCount = _myDoc.documents;
+    print(_myDocCount.length);  // Count of Documents in Collection
+}
   return Container(
     margin: EdgeInsets.only(right: 10),
     padding: EdgeInsets.symmetric(vertical: 30),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text("Quantity",
+        Text("Quantity"+'',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
@@ -163,11 +171,6 @@ class ItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String _userId;
-    crudMethods crudObj = new crudMethods();
-    FirebaseAuth.instance.currentUser().then((user) {
-      _userId = user.uid;
-    });
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -206,7 +209,7 @@ class ItemCard extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(
-              width: 100,
+              width: 50,
             ),
             GestureDetector(
               child: Icon(
@@ -214,19 +217,18 @@ class ItemCard extends StatelessWidget {
                 color: Colors.red,
               ),
               onTap: () {
-                Map<String, dynamic> cartData = {
-                  'barcode': products['barcode'],
-                  'img': products['img'],
-                  'name': products['name'],
-                  'netweight': products['netweight'],
-                  'price': products['price'],
-                  'uid': _userId
-                };
-                crudObj.deleteData(cartData).then((result) {
-                  dialogTrigger(context);
-                }).catchError((e) {
+                Firestore.instance
+                    .collection("CartData")
+                    .document(products['id'])
+                    .delete()
+                    .then((result) {})
+                    .catchError((e) {
                   print(e);
                 });
+                Scaffold.of(context).showSnackBar(new SnackBar(
+                  content: new Text('Deleted'),
+                  duration: Duration(seconds: 1),
+                ));
               },
             ),
           ],
@@ -234,30 +236,4 @@ class ItemCard extends StatelessWidget {
       ],
     );
   }
-}
-
-Future<bool> dialogTrigger(BuildContext context) async {
-  return showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Job done', style: TextStyle(fontSize: 22.0)),
-          content: Text(
-            'Added Successfully',
-            style: TextStyle(fontSize: 20.0),
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text(
-                'Alright',
-                style: TextStyle(fontSize: 18),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            )
-          ],
-        );
-      });
 }
