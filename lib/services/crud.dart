@@ -12,14 +12,21 @@ class crudMethods {
 
   Future<void> addData(cartData) async {
     if (isLoggedIn()) {
-      Firestore.instance
-          .collection('CartData')
-          .add(cartData)
-          .catchError((e) {
+      Firestore.instance.collection('CartData').add(cartData).catchError((e) {
         print(e);
       });
     } else {
       print('You need to logged in');
     }
+  }
+
+  Future<void> deleteData(docID) {
+    Firestore.instance
+        .collection('CartData')
+        .document(docID)
+        .delete()
+        .catchError((e) {
+          print(e); 
+        });
   }
 }

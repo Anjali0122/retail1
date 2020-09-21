@@ -18,7 +18,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String _scanBarcode;
-  String _userId;
 
   @override
   void initState() {
@@ -193,10 +192,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   StreamBuilder<QuerySnapshot> buildStreamClothes() {
-    crudMethods crudObj = new crudMethods();
-    FirebaseAuth.instance.currentUser().then((user) {
-      _userId = user.uid;
-    });
     return StreamBuilder(
         stream: Firestore.instance
             .collection("products")
