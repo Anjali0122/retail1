@@ -11,6 +11,10 @@ class crudMethods {
     }
   }
 
+  Future<String> getCurrentUID() async {
+    return (await FirebaseAuth.instance.currentUser()).uid;
+  }
+
   Future<void> addData(cartData) async {
     if (isLoggedIn()) {
       Firestore.instance.collection('CartData').add(cartData).catchError((e) {
@@ -28,7 +32,7 @@ class crudMethods {
         .document(docID)
         .delete()
         .catchError((e) {
-          print(e); 
-        });
+      print(e);
+    });
   }
 }

@@ -356,21 +356,33 @@ class ItemCard extends StatelessWidget {
                 color: Colors.black,
               ),
               onTap: () {
-                DocumentReference documentReference =
-                    Firestore.instance.collection('CartData').document();
-                documentReference.setData({
-                  'uid': _userId,
-                  'barcode': products['barcode'],
-                  'img': products['img'],
-                  'name': products['name'],
-                  'netweight': products['netweight'],
-                  'price': products['price'],
-                  'id': documentReference.documentID
-                }).then((result) {
-                  dialogTrigger(context);
-                }).catchError((e) {
-                  print(e);
-                });
+                DocumentReference documentReference = Firestore.instance
+                    .collection('userData')
+                    .document(_userId)
+                    .collection('cartData')
+                    .document();
+                documentReference
+                    .setData({
+                      'uid': _userId,
+                      'barcode': products['barcode'],
+                      'img': products['img'],
+                      'name': products['name'],
+                      'netweight': products['netweight'],
+                      'price': products['price'],
+                      'id': documentReference.documentID
+                    })
+                    .then((result) {})
+                    .catchError((e) {
+                      print(e);
+                    });
+                Scaffold.of(context).showSnackBar(new SnackBar(
+                  content: new Text('Added to Cart',
+                  style:TextStyle(color:Colors.white,fontSize: 18),
+                  textAlign: TextAlign.start, 
+                  ),
+                  duration: Duration(milliseconds: 300),
+                  backgroundColor: Color(0xFF3D82AE),
+                ));
               },
             ),
           ],
@@ -458,8 +470,11 @@ class ScanCard extends StatelessWidget {
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
-                DocumentReference documentReference =
-                    Firestore.instance.collection('CartData').document();
+                DocumentReference documentReference = Firestore.instance
+                    .collection('userData')
+                    .document(_userId)
+                    .collection('cartData')
+                    .document();
                 documentReference.setData({
                   'uid': _userId,
                   'barcode': products['barcode'],
