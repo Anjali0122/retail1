@@ -10,6 +10,7 @@ class Check extends StatelessWidget {
             future: FirebaseAuth.instance.currentUser(),
             builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot){
                        if (snapshot.hasData){
+                           // ignore: unused_local_variable
                            FirebaseUser user = snapshot.data; // this is your user instance
                            /// is because there is user already logged
                            return HomePage();

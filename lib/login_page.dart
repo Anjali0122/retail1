@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:retail/add_pro/add_product.dart';
 import 'package:retail/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:retail/services/AuthUtil.dart';
@@ -327,6 +328,17 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => Signup()));
+                  },
+                ),
+                 FlatButton(
+                  child: Text(
+                    'Add Product',
+                    style: TextStyle(color: Colors.black54),
+                    textAlign: TextAlign.right,
+                  ),
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => AddProduct()));
                   },
                 ),
               ],
