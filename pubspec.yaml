@@ -30,7 +30,6 @@ dependencies:
   firebase_database:
   flutter_barcode_scanner: ^1.0.1
   font_awesome_flutter:
-  adobe_xd:
   provider: ^4.1.3
 
 
